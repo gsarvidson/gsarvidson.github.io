@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Page Views Retrieval</title>
+</head>
+<body>
+  <h1>Page Views Retrieval</h1>
+
+  <form id="myForm">
+    <label for="numberInput">Number:</label>
+    <input type="number" id="numberInput" required><br>
+    <button type="submit">Submit</button>
+  </form>
+
+  <p id="urlDisplay"></p>
+  <div id="pageViews"></div>
+
+  <script>
+    document.getElementById("myForm").addEventListener("submit", function(event) {
+      event.preventDefault(); // Prevent form submission
+
+      // Retrieve user inputs
+      const number = document.getElementById("numberInput").value;
+
+      // Construct the URL using the provided number
+      const url = "https://www.trademe.co.nz/a/property/residential/sale/listing/" + number;
+
+      // Display the URL on the page
+      document.getElementById("urlDisplay").textContent = "Fetching page views from: " + url;
+
+      // Fetch the page content using the constructed URL
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          // Extract the page views using regular expressions
+          const regex = /<div\s+class=".*?tm-property-listing__listing-metadata-page-views.*?"> Page views: <b.*?><!---->(\d+) <!----><\/b><\/div>/;
+          const matches = data.match(regex);
+          const pageViews = matches ? matches[1] : "Page views not found.";
+
+          // Display the page views on the page
+          document.getElementById("pageViews").textContent = "Page views: " + pageViews;
+        })
+        .catch(error => {
+          console.log(error);
+          document.getElementById("pageViews").textContent = "Error occurred while fetching page views.";
+        });
+    });
+  </script>
+</body>
+</html>
